@@ -1,6 +1,7 @@
 import numpy as np
 
 from .ray import Ray
+from .hittable import Sphere
 
 import cv2
 
@@ -24,14 +25,19 @@ def main(output_image: str):
     vp_upper_left = camera_center - np.array([0, 0, focal_length]) - vp_u/2 - vp_v/2
     px_00 = vp_upper_left + 0.5*(px_delta_u + px_delta_v)
 
+    sphere = Sphere(center=[0,0,-1], radius=0.5)
+
     colors = np.zeros((image_height, image_width, 3))
     for y in range(image_height):
         for x in range(image_width):
             px = px_00 + (x*px_delta_u) + (y*px_delta_v)
             dir = px - camera_center
 
-            ray = Ray(camera_center, dir)
-            colors[y][x] = 255*ray.colorize()
+            ray = Ray(origin=camera_center, direction=dir)
+            if (len(sphere.hit(ray,0,1000000)) > 0):
+                colors[y][x]=[0,0,0]
+            else:
+                colors[y][x] = 255*ray.colorize()
 
     cv2.imwrite(output_image, colors[..., ::-1])
 

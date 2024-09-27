@@ -8,10 +8,6 @@ class Ray:
     origin: np.ndarray
     direction: np.ndarray
 
-    def __init__(self, origin, direction):
-        self.origin = origin
-        self.direction = direction
-
     def trace(self, t: float) -> np.ndarray:
         return self.origin + (self.direction * t)
 
