@@ -14,12 +14,25 @@ class HitRecord:
     point: np.ndarray
     normal: np.ndarray
 
+    def color_from_norm(self):
+        return 255/2*(1+self.normal)
 
 class Hittable(ABC):
     @abstractmethod
     def hit(self, ray: Ray, tmin: float, tmax: float) -> List[HitRecord]:
         return
 
+@dataclass
+class World:
+    hittable_list: List[Hittable]
+    tmin: float
+    tmax: float 
+    
+    def hit(self, ray: Ray) -> List[HitRecord]:
+        hits = []
+        for hittable in self.hittable_list:
+            hits += hittable.hit(ray, self.tmin, self.tmax)
+        return sorted(hits, key=lambda h: h.root)
 
 @dataclass
 class Sphere(Hittable):
@@ -63,9 +76,13 @@ class Sphere(Hittable):
 
             for t in [t0, t1]:
                 if (t >= tmin and t <= tmax):
+                    point = ray.trace(t)
+                    normal = (ray.trace(t)-self.center)/self.radius
+                    # surface normal should always point out
+                    normal_face_correction = 1 if np.dot(normal, ray.direction) < 0 else -1
                     ret.append(HitRecord(
                         root=t,
-                        point=ray.trace(t),
-                        normal=(ray.trace(t)-self.center)/self.radius))
+                        point=point,
+                        normal=normal_face_correction*normal))
 
         return ret

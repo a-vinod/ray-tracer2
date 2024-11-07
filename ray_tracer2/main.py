@@ -1,44 +1,25 @@
 import numpy as np
 
 from .ray import Ray
-from .hittable import Sphere
-
-import cv2
-
+from .hittable import World, Sphere
+from .camera import Camera
 
 def main(output_image: str):
-    aspect_ratio = 16.0 / 9.0
-    image_width = 400
-    image_height = int(image_width/aspect_ratio)
+    world = World(
+        hittable_list=[
+            Sphere(center=[-0.2,-0.25,-1], radius=0.20),
+            Sphere(center=[0.2,0.25,-1], radius=0.20),
+        ],
+        tmin=0,
+        tmax=1000000
+    )
 
-    focal_length = 1.0
-    vp_h = 2.0
-    vp_w = vp_h * float(image_width)/image_height
-    camera_center = np.array([0, 0, 0])
-
-    vp_u = np.array([vp_w, 0, 0])
-    vp_v = np.array([0, -vp_h, 0])
-
-    px_delta_u = vp_u / image_width
-    px_delta_v = vp_v / image_height
-
-    vp_upper_left = camera_center - np.array([0, 0, focal_length]) - vp_u/2 - vp_v/2
-    px_00 = vp_upper_left + 0.5*(px_delta_u + px_delta_v)
-
-    sphere = Sphere(center=[0,0,-1], radius=0.5)
-
-    colors = np.zeros((image_height, image_width, 3))
-    for y in range(image_height):
-        for x in range(image_width):
-            px = px_00 + (x*px_delta_u) + (y*px_delta_v)
-            dir = px - camera_center
-
-            ray = Ray(origin=camera_center, direction=dir)
-            if (len(sphere.hit(ray,0,1000000)) > 0):
-                colors[y][x]=[0,0,0]
-            else:
-                colors[y][x] = 255*ray.colorize()
-
-    cv2.imwrite(output_image, colors[..., ::-1])
+    camera = Camera(
+        image_width=600,
+        aspect_ratio=4.0/3.0,
+        focal_length=2.0
+    )
+    data = camera.render(world)
+    camera.export(data, output_image)
 
     return 0
