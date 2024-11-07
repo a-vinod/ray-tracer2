@@ -17,8 +17,10 @@ def main(output_image: str):
     camera = Camera(
         image_width=600,
         aspect_ratio=4.0/3.0,
-        focal_length=2.0
+        focal_length=2.0,
+        aa_samples=10,
     )
+
     data = camera.render(world)
     camera.export(data, output_image)
 
