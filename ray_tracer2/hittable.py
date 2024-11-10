@@ -14,32 +14,17 @@ class HitRecord:
     point: np.ndarray
     normal: np.ndarray
 
-    def color_from_norm(self):
-        return 255/2*(1+self.normal)
-
 class Hittable(ABC):
     @abstractmethod
-    def hit(self, ray: Ray, tmin: float, tmax: float) -> List[HitRecord]:
+    def hit(self, ray: Ray, tmin: float, tmax: float) -> (HitRecord, bool):
         return
-
-@dataclass
-class World:
-    hittable_list: List[Hittable]
-    tmin: float
-    tmax: float 
-    
-    def hit(self, ray: Ray) -> List[HitRecord]:
-        hits = []
-        for hittable in self.hittable_list:
-            hits += hittable.hit(ray, self.tmin, self.tmax)
-        return sorted(hits, key=lambda h: h.root)
 
 @dataclass
 class Sphere(Hittable):
     center: np.ndarray
     radius: float
 
-    def hit(self, ray: Ray, tmin: float, tmax: float) -> List[HitRecord]:
+    def hit(self, ray: Ray, tmin: float, tmax: float) -> (HitRecord, bool):
         """
         x^2 + y^2 + z^2 = r^2
         (Cx-x)^2 + (Cy-y)^2 + (Cz-z)^2 = r^2
@@ -62,8 +47,6 @@ class Sphere(Hittable):
         distances with respect to the origin that the ray intersects with
         this sphere!
         """
-        ret = []
-
         a = np.dot(ray.direction, ray.direction)
         b = -2.0*np.dot(ray.direction, self.center - ray.origin)
         c = np.dot(self.center - ray.origin, self.center - ray.origin)-(self.radius*self.radius)
@@ -71,18 +54,33 @@ class Sphere(Hittable):
         discriminant = b*b - 4*a*c
 
         if discriminant >= 0:
-            t0 = (-b - sqrt(discriminant))/(2*a)
-            t1 = (-b + sqrt(discriminant))/(2*a)
+            t = (-b - sqrt(discriminant))/(2*a)
+            if (t >= tmin and t <= tmax):
+                point = ray.trace(t)
+                normal = (ray.trace(t)-self.center)/self.radius
+                # surface normal should always point out
+                normal_face_correction = 1 if np.dot(normal, ray.direction) < 0 else -1
+                return (HitRecord(
+                    root=t,
+                    point=point,
+                    normal=normal_face_correction*normal), True)
 
-            for t in [t0, t1]:
-                if (t >= tmin and t <= tmax):
-                    point = ray.trace(t)
-                    normal = (ray.trace(t)-self.center)/self.radius
-                    # surface normal should always point out
-                    normal_face_correction = 1 if np.dot(normal, ray.direction) < 0 else -1
-                    ret.append(HitRecord(
-                        root=t,
-                        point=point,
-                        normal=normal_face_correction*normal))
+        return (HitRecord(0,np.zeros(0),np.zeros(0)), False)
 
-        return ret
+@dataclass
+class World:
+    hittable_list: List[Hittable]
+    tmin: float
+    tmax: float 
+    
+    def hit(self, ray: Ray) -> (HitRecord, bool):
+        tmax = self.tmax
+        ret = HitRecord(0,np.zeros(0),np.zeros(0))
+        found = False
+        for hittable in self.hittable_list:
+            hit, found_h = hittable.hit(ray, self.tmin, self.tmax)
+            if found_h and hit.root < tmax:
+                found = True
+                tmax = hit.root
+                ret = hit
+        return (ret, found)
