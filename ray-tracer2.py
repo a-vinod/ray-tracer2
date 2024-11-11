@@ -6,7 +6,8 @@ from ray_tracer2.main import main
 
 print("Ray Tracer in Python!")
 parser = argparse.ArgumentParser(description='Ray Tracer in Python')
-parser.add_argument('-o', '--output-image', help='Path to the output image file')
+parser.add_argument('-o', '--output-image',
+                    help='Path to the output image file')
 parser.add_argument('-w', '--image-width', help='Output image file width')
 parser.add_argument('-a', '--anti-aliasing', help='Anti-aliasing samples')
 args = parser.parse_args()
@@ -23,4 +24,3 @@ if args.anti_aliasing:
     anti_aliasing = int(args.anti_aliasing)
 
 exit(main(output_image, image_width, anti_aliasing))
-

@@ -13,11 +13,17 @@ class HitRecord:
     root: float
     point: np.ndarray
     normal: np.ndarray
+    material: 'Material'
 
+
+@dataclass
 class Hittable(ABC):
+    material: 'Material'
+
     @abstractmethod
     def hit(self, ray: Ray, tmin: float, tmax: float) -> (HitRecord, bool):
         return
+
 
 @dataclass
 class Sphere(Hittable):
@@ -49,7 +55,8 @@ class Sphere(Hittable):
         """
         a = np.dot(ray.direction, ray.direction)
         b = -2.0*np.dot(ray.direction, self.center - ray.origin)
-        c = np.dot(self.center - ray.origin, self.center - ray.origin)-(self.radius*self.radius)
+        c = np.dot(self.center - ray.origin, self.center -
+                   ray.origin)-(self.radius*self.radius)
 
         discriminant = b*b - 4*a*c
 
@@ -59,24 +66,27 @@ class Sphere(Hittable):
                 point = ray.trace(t)
                 normal = (ray.trace(t)-self.center)/self.radius
                 # surface normal should always point out
-                normal_face_correction = 1 if np.dot(normal, ray.direction) < 0 else -1
+                normal_face_correction = 1 if np.dot(
+                    normal, ray.direction) < 0 else -1
                 return (HitRecord(
                     root=t,
                     point=point,
-                    normal=normal_face_correction*normal), True)
+                    normal=normal_face_correction*normal,
+                    material=self.material), True)
 
-        return (HitRecord(0,np.zeros(0),np.zeros(0)), False)
+        return ("", False)
+
 
 @dataclass
 class World:
     hittable_list: List[Hittable]
     tmin: float
-    tmax: float 
-    
+    tmax: float
+
     def hit(self, ray: Ray) -> (HitRecord, bool):
         tmax = self.tmax
-        ret = HitRecord(0,np.zeros(0),np.zeros(0))
         found = False
+        ret = ""
         for hittable in self.hittable_list:
             hit, found_h = hittable.hit(ray, self.tmin, self.tmax)
             if found_h and hit.root < tmax:
