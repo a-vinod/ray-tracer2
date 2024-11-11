@@ -51,4 +51,4 @@ Currently this application is single-threaded and a single process. My laptop CP
 ![](output_image.png)
 
 ## References
-- [raytracing.github.io](raytracing.github.io)
+- [raytracing.github.io](https://raytracing.github.io)
