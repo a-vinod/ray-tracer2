@@ -38,6 +38,8 @@ options:
 
 ### Performance
 
+Currently this application is single-threaded and a single process. My laptop CPU is an 11th Gen Intel i5-1145G7 @ 2.60GHz.
+
 ```bash
 (.venv) $ python3.12 ray-tracer2.py -w 400 -a 100
 100%|███████████████████████████████████████████████████| 9000000/9000000 [18:09<00:00, 8259.10it/s]
