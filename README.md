@@ -1,4 +1,5 @@
 ### Setup
+
 1. Set up virtual environment
 
 ```bash
@@ -18,8 +19,6 @@ Ray trace default world (defined in ray\_tracer2/main.py) with default settings:
 (.venv) $ python3.12 ray-tracer2.py
 ```
 
-![](output_image.png)
-
 ```bash
 (.venv) $ python3.12 ray-tracer2.py --help
 Ray Tracer in Python!
@@ -36,3 +35,11 @@ options:
   -a ANTI_ALIASING, --anti-aliasing ANTI_ALIASING
                         Anti-aliasing samples
 ```
+
+### Performance
+
+```bash
+(.venv) $ python3.12 ray-tracer2.py -w 400 -a 100
+100%|███████████████████████████████████████████████████| 9000000/9000000 [18:09<00:00, 8259.10it/s]
+```
+![](output_image.png)
