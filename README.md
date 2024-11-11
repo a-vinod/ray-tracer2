@@ -1,4 +1,8 @@
-### Setup
+# ray-tracer(2)
+
+ray-tracer(2) is my second implemention of a ray tracer. My first implementation was in C but I wanted to move faster so I switched to Python. I pay for this crime in obnoxious runtimes, but premature optimization is the root of all evil.
+
+## Setup
 
 1. Set up virtual environment
 
@@ -12,7 +16,7 @@ $ python3.12 -m venv .venv
 (.venv) $ python3.12 -m pip install -r requirements.txt
 ```
 
-### Usage
+## Usage
 
 Ray trace default world (defined in ray\_tracer2/main.py) with default settings:
 ```bash
@@ -36,7 +40,7 @@ options:
                         Anti-aliasing samples
 ```
 
-### Performance
+## Performance
 
 Currently this application is single-threaded and a single process. My laptop CPU is an 11th Gen Intel i5-1145G7 @ 2.60GHz.
 
@@ -45,3 +49,6 @@ Currently this application is single-threaded and a single process. My laptop CP
 100%|███████████████████████████████████████████████████| 9000000/9000000 [18:09<00:00, 8259.10it/s]
 ```
 ![](output_image.png)
+
+## References
+- [raytracing.github.io](raytracing.github.io)
