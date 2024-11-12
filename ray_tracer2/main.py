@@ -14,9 +14,9 @@ def main(output_image: str, image_width: int, anti_aliasing: int):
             Sphere(center=[0.0, 0.0, -1.2], radius=0.5,
                    material=Lambertian(albedo=[0.1, 0.2, 0.5])),
             Sphere(center=[-1.0, 0.0, -1.0], radius=0.5,
-                   material=Metal(albedo=[0.8, 0.8, 0.8])),
+                   material=Metal(albedo=[0.8, 0.8, 0.8], fuzz=0.3)),
             Sphere(center=[1.0, 0.0, -1.0], radius=0.5,
-                   material=Metal(albedo=[0.8, 0.6, 0.2])),
+                   material=Metal(albedo=[0.8, 0.6, 0.2], fuzz=1.0)),
         ],
         tmin=0.001,
         tmax=1000000
