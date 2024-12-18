@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
 from .hittable import World
@@ -65,15 +66,23 @@ class Camera:
         return 255 * self.gamma_correct(gamma=2.0, color=color/self.aa_samples)
 
     def render(self, world: World) -> np.ndarray:
-        args = []
-        for y in range(self.image_height):
-            for x in range(self.image_width):
-                arg = (x, y, world)
-                args += [arg]
+        if self.processes > 1:
+            args = []
+            for y in range(self.image_height):
+                for x in range(self.image_width):
+                    arg = (x, y, world)
+                    args += [arg]
 
-        colors = process_map(self.render_px, args, max_workers=self.processes, chunksize=self.image_width)
-        colors = np.stack(colors)
-        colors = np.reshape(colors, (self.image_height, self.image_width, 3))
+            colors = process_map(self.render_px, args, max_workers=self.processes, chunksize=self.image_width)
+            colors = np.stack(colors)
+            colors = np.reshape(colors, (self.image_height, self.image_width, 3))
+        else:
+            colors = np.zeros((self.image_height, self.image_width, 3))
+            with tqdm(total=self.image_height*self.image_width) as pbar:
+                for y in range(self.image_height):
+                    for x in range(self.image_width):
+                        colors[y][x] = self.render_px((x,y,world))
+                        pbar.update(1)
         return colors
 
     def export(self, colors: np.ndarray, output_image: str) -> None:
