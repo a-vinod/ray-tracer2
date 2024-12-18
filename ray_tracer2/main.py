@@ -6,7 +6,7 @@ from .material import Lambertian, Metal
 from .camera import Camera
 
 
-def main(output_image: str, image_width: int, anti_aliasing: int):
+def main(output_image: str, image_width: int, anti_aliasing: int, processes: int):
     world = World(
         hittable_list=[
             Sphere(center=[0.0, -100.5, -1.0], radius=100.0,
@@ -27,6 +27,7 @@ def main(output_image: str, image_width: int, anti_aliasing: int):
         aspect_ratio=16.0/9.0,
         focal_length=1.0,
         aa_samples=anti_aliasing,
+        processes=processes
     )
 
     data = camera.render(world)
